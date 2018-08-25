@@ -1,0 +1,44 @@
+version: '3.4'
+services:
+  server:
+    build:
+      context: ../service/
+      target: server
+    volumes:
+      - public:/application/public
+    ports:
+      - 8000:80
+    links:
+      - service:php
+
+  service:
+    build:
+      context: ../service/
+      target: development
+    environment:
+      - DB_HOST=database
+      - DB_DATABASE=seoprj
+      - DB_USERNAME=seousr
+      - DB_PASSWORD=seopwd
+    volumes:
+      - ../service:/application
+      - public:/application/public
+      - /application/node_modules
+      - /application/vendor
+    links:
+      - database
+
+  database:
+    image: mysql:5
+    environment:
+      - MYSQL_DATABASE=seoprj
+      - MYSQL_USER=seousr
+      - MYSQL_PASSWORD=seopwd
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 33060:3306
+    volumes:
+      - db_data:/var/lib/mysql
+volumes:
+  db_data:
+  public:
